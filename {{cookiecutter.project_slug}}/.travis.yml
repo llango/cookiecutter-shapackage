@@ -1,0 +1,30 @@
+# 在travis-ci.com上自动测试的配置文件 
+
+language: python
+python:
+  - 3.8
+  - 3.7
+  - 3.6
+  - 3.5
+
+# 安装依赖命令, e.g. pip install -r requirements.txt --use-mirrors
+install: pip install -U tox-travis
+
+# 运行测试命令, e.g. python setup.py test
+script: tox
+
+{% if cookiecutter.use_pypi_deployment_with_travis == 'y' -%}
+# 假设你已经安装 travis-ci CLI 工具, 
+# 然后创建 Github repo 并将其添加到Travis后，运行以下命令完成PyPI部署设置:
+# $ travis encrypt --add deploy.password
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: {{ cookiecutter.pypi_username }}
+  password:
+    secure: PLEASE_REPLACE_ME
+  on:
+    tags: true
+    repo: {{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}
+    python: 3.8
+{%- endif %}
